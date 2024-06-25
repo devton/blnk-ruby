@@ -44,6 +44,9 @@ Style/Encoding:
 Layout/LineLength:
   Max: 99
 
+Style/OpenStructUse:
+  Enabled: false
+
 Documentation:
   Enabled: false
 

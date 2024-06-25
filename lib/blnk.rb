@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'http'
+require 'ostruct'
 require_relative 'blnk/version'
 require_relative 'blnk/client'
 require_relative 'blnk/ledger'
