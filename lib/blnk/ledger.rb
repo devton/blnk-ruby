@@ -21,6 +21,10 @@ module Blnk
       end
     end
 
+    def self.create(*)
+      new(*).save
+    end
+
     def save
       response = post_request(path: '/ledgers', body: body_data)
       return response.parse unless response.status.success?

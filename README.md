@@ -19,40 +19,46 @@ If bundler is not being used to manage dependencies, install the gem by executin
 ## Usage
 
 TODO:
-- Client
-- Create Ledger
-- Find Ledger
-- Create Balances
-- Find Balances
-- Create Transactions
-- Find Transactions
-- Do Search
+- [x] Create Ledger
+- [x] Find Ledger
+- [ ] Create Balances
+- [ ] Find Balances
+- [ ] Create Transactions
+- [ ] Find Transactions
+- [ ] Do Search
 
-## Configuration
+## Client connection
 
 ```
-Blnk.address = 'localhost:4444'
-Blnk.secret_token = 'secret_token'
-Blnk.search_api_key = 'secret_api_key'
+require 'blnk'
+
+Blnk.address = '192.168.2.7:5001'
+Blnk.secret_token = 'your_strong_secret_key'
+Blnk.search_api_key = Blnk.secret_token
 ```
 
 
 ## Ledger usage
 
 ```
-ledger = Blnk::Ledger.new(name: 'ledger_name', metadata: { customer_id: 'mycustomerid' })
-ledger.save
+ledger = Blnk::Ledger.new(name: 'foo bar').save
+ledger = Blnk::Ledger.create(name: 'foobar')
 
+ledger = Blnk::Ledger.find 'ledger_id'
+ledgers = Blnk::Ledger.all
 
-ledger = Blnk::Ledger.create(name: 'ledger_name', metadata: { customer_id: 'mycustomerid' })
-
-ledger = Blnk::Ledger.find('ledger_id')
+ledgers = Blnk::Ledger.search(
+  q: 'USD',
+  filter_by: 'balances > 1400', 
+  sort_by: 'created_at:desc', 
+  page: 1, 
+  per_page: 50
+)
 ```
 
 ## Creating a transaction
 
 ```
-client.create_transaction(destination: 'bal_ref_id', source: '@world', allow_overdraft: true, inflight: false)
 ```
 
 
