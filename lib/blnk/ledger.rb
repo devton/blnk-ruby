@@ -7,14 +7,14 @@ module Blnk
 
     def self.find(id)
       response = new.get_request(path: "/ledgers/#{id}")
-      return response.parse unless response.status.success?
+      return response unless response.status.success?
 
       new response.parse
     end
 
     def self.all
       response = new.get_request(path: '/ledgers')
-      return response.parse unless response.status.success?
+      return response unless response.status.success?
 
       response.parse.map do |r|
         new r
@@ -27,9 +27,7 @@ module Blnk
 
     def save
       response = post_request(path: '/ledgers', body: body_data)
-      return response.parse unless response.status.success?
-
-      # self.class.new response.parse
+      return response unless response.status.success?
 
       response.parse.each_pair { |k, v| self[k] = v }
       self
