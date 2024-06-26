@@ -85,10 +85,6 @@ class TestLedger < Minitest::Test
     create = Blnk::Ledger.create
 
     assert create.status.bad_request?
-
-    create_with_new = Blnk::Ledger.new.save
-
-    assert create_with_new.status.bad_request?
   end
 
   def test_that_ledger_create_success
@@ -99,16 +95,5 @@ class TestLedger < Minitest::Test
     assert create.is_a?(Blnk::Ledger)
     assert create.ledger_id.eql?(ledger_response_body[:ledger_id])
     assert create.name.eql?(ledger_response_body[:name])
-  end
-
-  def test_that_ledger_create_success_using_new
-    stub_create_ledger_request_with_success
-
-    create_with_new = Blnk::Ledger.new name: 'ledger_name'
-    create_with_new.save
-
-    assert create_with_new.is_a?(Blnk::Ledger)
-    assert create_with_new.ledger_id.eql?(ledger_response_body[:ledger_id])
-    assert create_with_new.name.eql?(ledger_response_body[:name])
   end
 end

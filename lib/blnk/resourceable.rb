@@ -24,17 +24,13 @@ module Blnk
     end
 
     def self.create(*)
-      new(*).save
-    end
-
-    def save
-      return self if persisted?
-
-      response = post_request(path: "/#{self.class.resource_name}", body: body_data)
+      response = new.post_request(
+        path: "/#{resource_name}",
+        body: new(*).body_data
+      )
       return response unless response.status.success?
 
-      response.parse.each_pair { |k, v| self[k] = v }
-      self
+      new(response.parse)
     end
 
     def persisted? = raise NotImplementedError
