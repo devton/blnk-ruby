@@ -23,8 +23,8 @@ module Blnk
       end
     end
 
-    def self.create(**create_args)
-      new(**create_args).save
+    def self.create(*)
+      new(*).save
     end
 
     def save
@@ -37,7 +37,6 @@ module Blnk
       self
     end
 
-    def create_args = {}
     def persisted? = raise NotImplementedError
     def body_data = raise NotImplementedError
   end
