@@ -26,6 +26,8 @@ module Blnk
     end
 
     def save
+      return self if ledger_id
+
       response = post_request(path: '/ledgers', body: body_data)
       return response unless response.status.success?
 
