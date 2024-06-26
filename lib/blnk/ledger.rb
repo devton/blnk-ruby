@@ -2,40 +2,11 @@
 
 module Blnk
   # Ledger representation
-  class Ledger < OpenStruct
-    include Client
+  class Ledger < Resourceable
+    def self.resource_name = :ledgers
 
-    def self.find(id)
-      response = new.get_request(path: "/ledgers/#{id}")
-      return response unless response.status.success?
-
-      new response.parse
-    end
-
-    def self.all
-      response = new.get_request(path: '/ledgers')
-      return response unless response.status.success?
-
-      response.parse.map do |r|
-        new r
-      end
-    end
-
-    def self.create(*)
-      new(*).save
-    end
-
-    def save
-      return self if ledger_id
-
-      response = post_request(path: '/ledgers', body: body_data)
-      return response unless response.status.success?
-
-      response.parse.each_pair { |k, v| self[k] = v }
-      self
-    end
-
-    private
+    def create_args = { name:, meta_data: meta_data || nil }
+    def persisted? = !ledger_id.nil?
 
     def body_data
       {

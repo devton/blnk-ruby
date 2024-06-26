@@ -4,6 +4,7 @@ require 'http'
 require 'ostruct'
 require_relative 'blnk/version'
 require_relative 'blnk/client'
+require_relative 'blnk/resourceable'
 require_relative 'blnk/ledger'
 
 module Blnk
