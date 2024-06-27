@@ -4,8 +4,8 @@ module Blnk
   # Balance representation
   class Balance < Resourceable
     def self.resource_name = :balances
+    def self.id_field = :balance_id
 
-    def persisted? = !balance_id.nil?
     def body_data = { ledger_id:, currency: }
   end
 end

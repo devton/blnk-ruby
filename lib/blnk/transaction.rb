@@ -4,8 +4,8 @@ module Blnk
   # Transaction representation
   class Transaction < Resourceable
     def self.resource_name = :transactions
+    def self.id_field = :transaction_id
 
-    def persisted? = !transaction_id.nil?
     def body_data = {}
   end
 end

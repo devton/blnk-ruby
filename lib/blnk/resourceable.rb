@@ -7,47 +7,50 @@ module Blnk
 
     include Client
 
-    def self.resource_name = raise NotImplementedError
+    class << self
+      def resource_name = raise NotImplementedError
+      def id_field = :id
 
-    def self.find(id)
-      response = new.get_request(path: "/#{resource_name}/#{id}")
-      return response unless response.status.success?
+      def find(id)
+        response = new.get_request(path: "/#{resource_name}/#{id}")
+        return response unless response.status.success?
 
-      new response.parse
-    end
+        new response.parse
+      end
 
-    def self.all
-      response = new.get_request(path: "/#{resource_name}")
-      return response unless response.status.success?
+      def all
+        response = new.get_request(path: "/#{resource_name}")
+        return response unless response.status.success?
 
-      response.parse.map do |r|
-        new r
+        response.parse.map do |r|
+          new r
+        end
+      end
+
+      def create(**args)
+        response = new.post_request(
+          path: "/#{resource_name}",
+          body: args
+        )
+        return response unless response.status.success?
+
+        new(response.parse)
+      end
+
+      def search(**args)
+        response = new.post_request(
+          path: "/search/#{resource_name}",
+          body: args
+        )
+        return response unless response.status.success?
+
+        sr = SearchResult.new(response.parse)
+        sr.resource_name = resource_name
+        sr
       end
     end
 
-    def self.create(*)
-      response = new.post_request(
-        path: "/#{resource_name}",
-        body: new(*).body_data
-      )
-      return response unless response.status.success?
-
-      new(response.parse)
-    end
-
-    def self.search(**args)
-      response = new.post_request(
-        path: "/search/#{resource_name}",
-        body: args
-      )
-      return response unless response.status.success?
-
-      sr = SearchResult.new(response.parse)
-      sr.resource_name = resource_name
-      sr
-    end
-
-    def persisted? = raise NotImplementedError
+    def persisted? = table[self.class.id_field]
     def body_data = raise NotImplementedError
   end
 end
