@@ -7,6 +7,7 @@ require_relative 'blnk/client'
 require_relative 'blnk/resourceable'
 require_relative 'blnk/ledger'
 require_relative 'blnk/balance'
+require_relative 'blnk/transaction'
 
 module Blnk
   class Error < StandardError; end

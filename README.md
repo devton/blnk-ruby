@@ -14,9 +14,8 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install blnk
 
-## Usage
+## TODO
 
-TODO:
 - [x] Create Ledger
 - [x] Find Ledger
 - [x] List Ledgers
@@ -27,6 +26,7 @@ TODO:
 - [ ] Create Transaction
 - [ ] Find Transaction
 - [ ] Search Transactions
+- [ ] Use Dry Schema to validate inputs
 
 ## Usage
 
