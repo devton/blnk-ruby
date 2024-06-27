@@ -20,10 +20,10 @@ TODO:
 - [x] Create Ledger
 - [x] Find Ledger
 - [x] List Ledgers
-- [ ] Search Ledgers
+- [x] Search Ledgers
 - [x] Create Balances
 - [x] Find Balance
-- [ ] Search Balances
+- [x] Search Balances
 - [ ] Create Transaction
 - [ ] Find Transaction
 - [ ] Search Transactions
@@ -45,14 +45,10 @@ ledger = Blnk::Ledger.create(name: 'foobar')
 ledger = Blnk::Ledger.find 'ledger_id'
 ledgers = Blnk::Ledger.all
 
-# search not implemented yet
-ledgers = Blnk::Ledger.search(
-  q: 'USD',
-  filter_by: 'balances > 1400', 
-  sort_by: 'created_at:desc', 
-  page: 1, 
-  per_page: 50
-)
+ledgers = Blnk::Ledger.search(q: '*')
+
+# for search fields check the documentation 
+https://docs.blnkledger.com/ledger/tutorial/search/overview
 
 
 # Balance integrations

@@ -3,6 +3,8 @@
 module Blnk
   # Resoureable module that bring some tweaks for basic REST api integration
   class Resourceable < OpenStruct
+    class SearchResult < OpenStruct; end
+
     include Client
 
     def self.resource_name = raise NotImplementedError
@@ -31,6 +33,18 @@ module Blnk
       return response unless response.status.success?
 
       new(response.parse)
+    end
+
+    def self.search(**args)
+      response = new.post_request(
+        path: "/search/#{resource_name}",
+        body: args
+      )
+      return response unless response.status.success?
+
+      sr = SearchResult.new(response.parse)
+      sr.resource_name = resource_name
+      sr
     end
 
     def persisted? = raise NotImplementedError
