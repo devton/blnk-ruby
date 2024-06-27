@@ -7,7 +7,7 @@ def stub_find_balance_request_with_error
     .to_return_json(body: { error: 'balance with ID \'BALANCE_ID\' not found' }, status: 400)
 end
 
-def balance_response_body
+def balance_response_body # rubocop:disable Metrics/MethodLength
   { balance: 0,
     version: 1,
     inflight_balance: 0,
