@@ -78,7 +78,9 @@ module Blnk
       def search_contract_new = (search_contract || DefaultSearchContract).new
     end
 
+    def reload = self.class.find(_id)
     # table[self.class.id_field]
-    def persisted? = public_send(self.class.id_field)
+    def persisted? = !_id.nil?
+    def _id = public_send(self.class.id_field)
   end
 end
