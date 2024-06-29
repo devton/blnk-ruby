@@ -29,7 +29,7 @@ module Blnk
       def all
         check_vars
         res = get_request(path: "/#{resource_name}")
-        return Failure(res.parse&.symbolize_keys) unless res.status.success?
+        return Failure(res.parse&.transform_keys(&:to_sym)) unless res.status.success?
 
         Success(res.parse.map { |r| new(r) })
       end
@@ -39,7 +39,7 @@ module Blnk
         return contract if contract.failure?
 
         res = post_request(path: "/#{resource_name}", body: contract.to_h)
-        return Failure(res.parse&.symbolize_keys) unless res.status.success?
+        return Failure(res.parse&.transform_keys(&:to_sym)) unless res.status.success?
 
         Success(new(res.parse))
       end
@@ -49,7 +49,7 @@ module Blnk
         return contract if contract.failure?
 
         res = post_request(path: "/search/#{resource_name}", body: contract.to_h)
-        return Failure(res.parse&.symbolize_keys) unless res.status.success?
+        return Failure(res.parse&.transform_keys(&:to_sym)) unless res.status.success?
 
         result = SearchResult.new(res.parse.merge(resource_name:))
         Success(result)
