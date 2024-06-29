@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    blnk (0.1.1)
+    blnk (0.1.2)
       dry-configurable (~> 1.0.0)
       dry-monads (~> 1.6)
       dry-validation (~> 1.10.0)
