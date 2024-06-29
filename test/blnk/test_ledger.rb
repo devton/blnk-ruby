@@ -50,15 +50,16 @@ class TestLedger < Minitest::Test
     stub_find_ledger_request_with_error
     find = Blnk::Ledger.find 'LEDGER_ID'
 
-    assert find.status.bad_request?
+    assert find.failure?
   end
 
   def test_that_ledger_find_success
     stub_find_ledger_request_with_success
     find = Blnk::Ledger.find 'LEDGER_ID'
 
-    assert find.is_a?(Blnk::Ledger)
-    assert find.ledger_id.eql?(ledger_response_body[:ledger_id])
+    assert find.success?
+    assert find.value!.is_a?(Blnk::Ledger)
+    assert find.value!.ledger_id.eql?(ledger_response_body[:ledger_id])
   end
 
   def test_that_ledger_all_error
@@ -66,17 +67,18 @@ class TestLedger < Minitest::Test
 
     all = Blnk::Ledger.all
 
-    assert !all.status.success?
+    assert all.failure?
   end
 
-  def test_that_ledger_all_success
+  def test_that_ledger_all_success # rubocop:disable Metric/AbcSize
     stub_all_ledger_request_with_success
 
     all = Blnk::Ledger.all
 
-    assert all.is_a?(Array)
-    assert all.first.is_a?(Blnk::Ledger)
-    assert all.first.ledger_id.eql?(ledger_response_body[:ledger_id])
+    assert all.success?
+    assert all.value!.is_a?(Array)
+    assert all.value!.first.is_a?(Blnk::Ledger)
+    assert all.value!.first.ledger_id.eql?(ledger_response_body[:ledger_id])
   end
 
   def test_that_ledger_create_errosr
@@ -84,16 +86,17 @@ class TestLedger < Minitest::Test
 
     create = Blnk::Ledger.create
 
-    assert create.status.bad_request?
+    assert create.failure?
   end
 
-  def test_that_ledger_create_success
+  def test_that_ledger_create_success # rubocop:disable Metrics/AbcSize
     stub_create_ledger_request_with_success
 
     create = Blnk::Ledger.create(name: 'ledger_name')
 
-    assert create.is_a?(Blnk::Ledger)
-    assert create.ledger_id.eql?(ledger_response_body[:ledger_id])
-    assert create.name.eql?(ledger_response_body[:name])
+    assert create.success?
+    assert create.value!.is_a?(Blnk::Ledger)
+    assert create.value!.ledger_id.eql?(ledger_response_body[:ledger_id])
+    assert create.value!.name.eql?(ledger_response_body[:name])
   end
 end

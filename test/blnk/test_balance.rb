@@ -52,20 +52,21 @@ def stub_all_balance_request_with_success
     .to_return_json(body: [balance_response_body], status: 200)
 end
 
-class TestLedger < Minitest::Test
+class TestBalance < Minitest::Test
   def test_that_balance_not_found
     stub_find_balance_request_with_error
     find = Blnk::Balance.find 'BALANCE_ID'
 
-    assert find.status.bad_request?
+    assert find.failure?
   end
 
   def test_that_balance_find_success
     stub_find_balance_request_with_success
     find = Blnk::Balance.find 'BALANCE_ID'
 
-    assert find.is_a?(Blnk::Balance)
-    assert find.balance_id.eql?(balance_response_body[:balance_id])
+    assert find.success?
+    assert find.value!.is_a?(Blnk::Balance)
+    assert find.value!.balance_id.eql?(balance_response_body[:balance_id])
   end
 
   # NOTE: /balances route does not exist, at moment
@@ -92,16 +93,17 @@ class TestLedger < Minitest::Test
 
     create = Blnk::Balance.create
 
-    assert create.status.bad_request?
+    assert create.failure?
   end
 
-  def test_that_balance_create_success
+  def test_that_balance_create_success # rubocop:disable Metrics/AbcSize
     stub_create_balance_request_with_success
 
     create = Blnk::Balance.create(ledger_id: 'ledger_id', currency: 'USD')
 
-    assert create.is_a?(Blnk::Balance)
-    assert create.balance_id.eql?(balance_response_body[:balance_id])
-    assert create.name.eql?(balance_response_body[:name])
+    assert create.success?
+    assert create.value!.is_a?(Blnk::Balance)
+    assert create.value!.balance_id.eql?(balance_response_body[:balance_id])
+    assert create.value!.name.eql?(balance_response_body[:name])
   end
 end

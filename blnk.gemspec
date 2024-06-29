@@ -2,7 +2,7 @@
 
 require_relative 'lib/blnk/version'
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Metric/Metrics/BlockLength
   spec.name = 'blnk'
   spec.version = Blnk::VERSION
   spec.authors = ['Antonio Roberto Silva']
@@ -34,6 +34,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
+  spec.add_dependency 'dry-configurable', '~> 1.0.0'
+  spec.add_dependency 'dry-monads', '~> 1.6'
+  spec.add_dependency 'dry-validation', '~> 1.10.0'
   spec.add_dependency 'http', '~> 5.2.0'
 
   # For more information and examples about making a new gem, check out our

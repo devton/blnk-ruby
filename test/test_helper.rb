@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'blnk'
+require 'pry'
 require 'webmock/minitest'
 require 'minitest/autorun'
 require 'minitest/reporters'

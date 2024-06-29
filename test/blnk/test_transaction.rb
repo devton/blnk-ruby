@@ -61,15 +61,16 @@ class TestTransaction < Minitest::Test
     stub_find_transaction_request_with_error
     find = Blnk::Transaction.find 'transaction_id'
 
-    assert find.status.bad_request?
+    assert find.failure?
   end
 
   def test_that_transaction_find_success
     stub_find_transaction_request_with_success
     find = Blnk::Transaction.find 'transaction_id'
 
-    assert find.is_a?(Blnk::Transaction)
-    assert find.transaction_id.eql?(transaction_response_body[:transaction_id])
+    assert find.success?
+    assert find.value!.is_a?(Blnk::Transaction)
+    assert find.value!.transaction_id.eql?(transaction_response_body[:transaction_id])
   end
 
   # NOTE: /transactions route does not exist, at moment
@@ -96,16 +97,26 @@ class TestTransaction < Minitest::Test
 
     create = Blnk::Transaction.create
 
-    assert create.status.bad_request?
+    assert create.failure?
   end
 
-  def test_that_transaction_create_success
+  def test_that_transaction_create_success # rubocop:disable Metric/AbcSize, Metrics/MethodLength
     stub_create_transaction_request_with_success
 
-    create = Blnk::Transaction.create(ledger_id: 'ledger_id', currency: 'USD')
+    create = Blnk::Transaction.create(
+      amount: 75,
+      reference: 'ref_005',
+      currency: 'BRLX',
+      precision: 100,
+      source: '@world',
+      destination: 'bln_469f93bc-40e9-4e0e-b6ab-d11c3638c15d',
+      description: 'For fees',
+      allow_overdraft: true
+    )
 
-    assert create.is_a?(Blnk::Transaction)
-    assert create.transaction_id.eql?(transaction_response_body[:transaction_id])
-    assert create.name.eql?(transaction_response_body[:name])
+    assert create.success?
+    assert create.value!.is_a?(Blnk::Transaction)
+    assert create.value!.transaction_id.eql?(transaction_response_body[:transaction_id])
+    assert create.value!.name.eql?(transaction_response_body[:name])
   end
 end

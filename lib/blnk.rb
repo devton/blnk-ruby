@@ -2,6 +2,8 @@
 
 require 'http'
 require 'ostruct'
+require 'dry-validation'
+require 'dry/monads'
 require_relative 'blnk/version'
 require_relative 'blnk/client'
 require_relative 'blnk/resourceable'

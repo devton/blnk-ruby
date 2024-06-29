@@ -3,9 +3,15 @@
 module Blnk
   # Ledger representation
   class Ledger < Resourceable
-    def self.resource_name = :ledgers
-    def self.id_field = :ledger_id
+    class CreateContract < Dry::Validation::Contract
+      schema do
+        required(:name).value(:string)
+        optional(:meta_data).value(:hash)
+      end
+    end
 
-    def body_data = { name:, meta_data: }
+    self.resource_name = :ledgers
+    self.id_field = :ledger_id
+    self.create_contract = CreateContract
   end
 end
