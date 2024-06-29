@@ -18,13 +18,7 @@ module Blnk
 
       attr_accessor :resource_name, :id_field, :create_contract, :search_contract
 
-      def find(id)
-        check_vars
-        res = get_request(path: "/#{resource_name}/#{id}")
-        return Success(new(res.parse)) if res.status.success?
-
-        Failure(res.parse)
-      end
+      def find(id) = with_req resp: get_request(path: "/#{resource_name}/#{id}")
 
       def all
         check_vars
@@ -76,9 +70,30 @@ module Blnk
       end
 
       def search_contract_new = (search_contract || DefaultSearchContract).new
+
+      def handler(parsed, status) = (status.success? ? Success(new(parsed)) : Failure(parsed))
+      def with_req(resp:, self_caller: nil) = using_resp(resp:, self_caller:, &method(:handler))
+
+      def using_resp(resp:, self_caller: nil, &block)
+        check_vars
+        parsed = resp.parse.transform_keys(&:to_sym)
+        self_caller&.reload
+
+        block.call(parsed, resp.status)
+      end
     end
 
-    def reload = self.class.find(_id)
+    def reload
+      self.class.find(_id) do |res|
+        next unless res.status.success?
+
+        res.parse.each_pair do |k, v|
+          self[k] = v
+        end
+        self
+      end
+    end
+
     # table[self.class.id_field]
     def persisted? = !_id.nil?
     def _id = public_send(self.class.id_field)
