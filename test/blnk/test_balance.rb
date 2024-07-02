@@ -7,7 +7,7 @@ def stub_find_balance_request_with_error
     .to_return_json(body: { error: 'balance with ID \'BALANCE_ID\' not found' }, status: 400)
 end
 
-def balance_response_body # rubocop:disable Metrics/MethodLength
+def balance_response_body(opts: {}) # rubocop:disable Metrics/MethodLength
   { balance: 0,
     version: 1,
     inflight_balance: 0,
@@ -23,12 +23,12 @@ def balance_response_body # rubocop:disable Metrics/MethodLength
     currency: 'USD',
     created_at: '2024-06-26T01:19:35.122774Z',
     inflight_expires_at: '0001-01-01T00:00:00Z',
-    meta_data: nil }
+    meta_data: nil }.merge(opts)
 end
 
-def stub_find_balance_request_with_success
+def stub_find_balance_request_with_success(opts: {})
   stub_request(:get, %r{/balances/(.*)})
-    .to_return_json(body: balance_response_body, status: 200)
+    .to_return_json(body: balance_response_body(opts:), status: 200)
 end
 
 def stub_create_balance_request_with_success
@@ -58,6 +58,22 @@ class TestBalance < Minitest::Test
     find = Blnk::Balance.find 'BALANCE_ID'
 
     assert find.failure?
+  end
+
+  def test_that_balance_reload # rubocop:disable Metrics/AbcSize
+    stub_find_balance_request_with_success(opts: { credit_balance: 20 })
+    find = Blnk::Balance.find 'BALANCE_ID'
+
+    assert find.success?
+    assert find.value!.is_a?(Blnk::Balance)
+    assert find.value!.credit_balance.eql?(20)
+    assert find.value!.balance_id.eql?(balance_response_body[:balance_id])
+
+    stub_find_balance_request_with_success(opts: { credit_balance: 100 })
+
+    find.value!.reload
+
+    assert find.value!.credit_balance.eql?(100)
   end
 
   def test_that_balance_find_success

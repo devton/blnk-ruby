@@ -23,15 +23,16 @@ module Blnk
     self.id_field = :transaction_id
     self.create_contract = CreateContract
 
-    def refund = self.class.with_req(req: request_refund, self_caller: self)
-    def void = raise NotImplementedError
-    def commit = raise NotImplementedError
+    def refund = short_hander(resp: req_refund)
+    def void = short_hander(resp: req_inflight(body: { status: 'void' }))
+    def commit = short_hander(resp: req_inflight(body: { status: 'commit' }))
 
     private
 
+    def short_hander(resp:) = with_handler(resp:, kself: self)
     def inflight_path = "/transactions/inflight/#{_id}"
-    def refund_path = "/refund-transactions/#{_id}"
-    def request_update_inflight(body:, path: inflight_path) = self.class.put_request(path:, body:)
-    def request_refund(path: refund_path) = self.class.post_request(path:, body: nil)
+    def refund_path = "/refund-transaction/#{_id}"
+    def req_inflight(body:) = put_request(path: inflight_path, body:)
+    def req_refund = post_request(path: refund_path, body: nil)
   end
 end
