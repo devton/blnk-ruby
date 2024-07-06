@@ -1,5 +1,3 @@
-# This gem is under development, don't use in production
-
 # Blnk
 
 Easy way to use the blnkfinance.com API in ruby
@@ -24,10 +22,10 @@ If bundler is not being used to manage dependencies, install the gem by executin
 - [x] Find Balance
 - [x] Search Balances
 - [x] Create Transaction
-- [ ] Multiple sources / destinations Transaction
-- [ ] Refund Transaction
-- [ ] Commit inflight Transaction
-- [ ] Void inflight Transaction
+- [x] Multiple sources / destinations Transaction
+- [x] Refund Transaction
+- [x] Commit inflight Transaction
+- [x] Void inflight Transaction
 - [x] Find Transaction
 - [x] Search Transactions
 - [ ] Handler notifications

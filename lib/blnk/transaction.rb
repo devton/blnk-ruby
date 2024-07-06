@@ -9,13 +9,39 @@ module Blnk
         required(:precision).value(:integer)
         required(:currency).value(:string)
         required(:reference).value(:string)
-        required(:source).value(:string)
-        required(:destination).value(:string)
+        optional(:source).value(:string)
+        optional(:sources).array(:hash) do
+          required(:identifier).value(:string)
+          required(:distribution).value(:string)
+          required(:narration).value(:string)
+        end
+        optional(:destination).value(:string)
+        optional(:destinations).array(:hash) do
+          required(:identifier).value(:string)
+          required(:distribution).value(:string)
+          required(:narration).value(:string)
+        end
         required(:description).value(:string)
         required(:allow_overdraft).value(:bool)
         optional(:inflight).value(:bool)
         optional(:rate).value(:integer)
         optional(:scheduled_for).value(:string)
+      end
+
+      rule do
+        base.failure('must only contain one of source, sources') if key?(:source) && key?(:sources)
+
+        if key?(:destination) && key?(:destinations)
+          base.failure('must only contain one of destination, destinations')
+        end
+
+        if values[:source].to_s.empty? && values[:sources].to_s.empty?
+          key(:source).failure('missing source')
+        end
+
+        if values[:destination].to_s.empty? && values[:destinations].to_s.empty?
+          key(:destination).failure('missing destination')
+        end
       end
     end
 

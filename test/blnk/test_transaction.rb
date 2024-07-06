@@ -70,6 +70,18 @@ def stub_refund_transaction_request_with_error
     .to_return_json(body: { error: 'failed_refund_transaction' }, status: 400)
 end
 
+def stub_inflight_status_change_transaction_request_with_error(body: { status: 'commit' })
+  stub_request(:put, %r{/transactions/inflight/(.*)})
+    .with(body:)
+    .to_return_json(body: { error: 'failed' }, status: 400)
+end
+
+def stub_inflight_status_change_transaction_request_with_success(body: { status: 'commit' })
+  stub_request(:put, %r{/transactions/inflight/(.*)})
+    .with(body:)
+    .to_return_json(body: transaction_response_body, status: 200)
+end
+
 def stub_find_transaction_request_with_success
   stub_request(:get, %r{/transactions/(.*)})
     .to_return_json(body: transaction_response_body, status: 200)
@@ -96,7 +108,7 @@ def stub_all_transaction_request_with_success
     .to_return_json(body: [transaction_response_body], status: 200)
 end
 
-class TestTransaction < Minitest::Test
+class TestTransaction < Minitest::Test # rubocop:disable Metrics/ClassLength
   def test_that_transaction_not_found
     stub_find_transaction_request_with_error
     find = Blnk::Transaction.find 'transaction_id'
@@ -140,7 +152,7 @@ class TestTransaction < Minitest::Test
     assert create.failure?
   end
 
-  def test_that_transaction_create_success # rubocop:disable Metric/AbcSize, Metrics/MethodLength
+  def test_that_transaction_create_success # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     stub_create_transaction_request_with_success
 
     create = Blnk::Transaction.create(
@@ -160,7 +172,7 @@ class TestTransaction < Minitest::Test
     assert create.value!.name.eql?(transaction_response_body[:name])
   end
 
-  def test_that_transaction_refund_error # rubocop:disable Metric/Metrics/MethodLength
+  def test_that_transaction_refund_error # rubocop:disable Metrics/MethodLength
     stub_find_transaction_request_with_success
     stub_create_transaction_request_with_success
     stub_refund_transaction_request_with_error
@@ -181,7 +193,7 @@ class TestTransaction < Minitest::Test
     assert refund_txn.failure?
   end
 
-  def test_that_transaction_refund_success # rubocop:disable Metric/Metrics/MethodLength
+  def test_that_transaction_refund_success # rubocop:disable Metrics/MethodLength
     stub_find_transaction_request_with_success
     stub_create_transaction_request_with_success
     stub_refund_transaction_request_with_success
@@ -201,5 +213,71 @@ class TestTransaction < Minitest::Test
 
     assert refund_txn.success?
     assert txn.value!.transaction_id != refund_txn.value!.transaction_id
+  end
+
+  def test_that_transaction_void_error # rubocop:disable Metrics/MethodLength
+    stub_find_transaction_request_with_success
+    stub_create_transaction_request_with_success
+    stub_inflight_status_change_transaction_request_with_error(body: { status: 'void' })
+
+    txn = Blnk::Transaction.create(
+      amount: 75,
+      reference: 'ref_005',
+      currency: 'BRLX',
+      precision: 100,
+      source: '@world',
+      destination: 'bln_469f93bc-40e9-4e0e-b6ab-d11c3638c15d',
+      description: 'For fees',
+      allow_overdraft: true,
+      inflight: true
+    )
+
+    void_txn = txn.value!.void
+
+    assert void_txn.failure?
+  end
+
+  def test_that_transaction_void_success # rubocop:disable Metrics/MethodLength
+    stub_find_transaction_request_with_success
+    stub_create_transaction_request_with_success
+    stub_inflight_status_change_transaction_request_with_success(body: { status: 'void' })
+
+    txn = Blnk::Transaction.create(
+      amount: 75,
+      reference: 'ref_005',
+      currency: 'BRLX',
+      precision: 100,
+      source: '@world',
+      destination: 'bln_469f93bc-40e9-4e0e-b6ab-d11c3638c15d',
+      description: 'For fees',
+      allow_overdraft: true,
+      inflight: true
+    )
+
+    void_txn = txn.value!.void
+
+    assert void_txn.success?
+  end
+
+  def test_that_transaction_commit_error # rubocop:disable Metrics/MethodLength
+    stub_find_transaction_request_with_success
+    stub_create_transaction_request_with_success
+    stub_inflight_status_change_transaction_request_with_error(body: { status: 'commit' })
+
+    txn = Blnk::Transaction.create(
+      amount: 75,
+      reference: 'ref_005',
+      currency: 'BRLX',
+      precision: 100,
+      source: '@world',
+      destination: 'bln_469f93bc-40e9-4e0e-b6ab-d11c3638c15d',
+      description: 'For fees',
+      allow_overdraft: true,
+      inflight: true
+    )
+
+    commit_txn = txn.value!.commit
+
+    assert commit_txn.failure?
   end
 end
