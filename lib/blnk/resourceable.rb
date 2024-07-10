@@ -13,6 +13,10 @@ module Blnk
     class DefaultSearchContract < Dry::Validation::Contract
       schema do
         required(:q).value(:string)
+        optional(:filter_by).value(:string)
+        optional(:sort_by).value(:string)
+        optional(:page).value(:integer)
+        optional(:per_page).value(:integer)
       end
     end
 
